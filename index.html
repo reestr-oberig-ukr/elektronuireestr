@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кабінет | ЄДР "ОБЕРІГ" | Міністерство оборони України</title>
+    <style>
+        :root {
+            --gov-blue: #002d56;
+            --gov-dark: #001a33;
+            --gov-gold: #c5a059;
+            --gov-bg: #f8fafc;
+            --gov-white: #ffffff;
+            --status-red: #b91c1c;
+            --status-red-light: #fef2f2;
+            --text-main: #1e293b;
+            --border-soft: #cbd5e1;
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--gov-bg);
+            overflow-x: hidden;
+            color: var(--text-main);
+        }
+
+        /* --- ЕКРАН ВХОДУ --- */
+        #auth-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--gov-dark) 0%, var(--gov-blue) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-card {
+            background: white;
+            width: 400px;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .login-card img { width: 80px; margin-bottom: 20px; }
+        .login-card h2 { font-size: 18px; color: var(--gov-blue); margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; color: #64748b; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--border-soft); border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+
+        .btn-login { 
+            width: 100%; background: var(--gov-gold); color: var(--gov-dark); border: none; 
+            padding: 15px; font-weight: 800; border-radius: 4px; cursor: pointer; 
+            text-transform: uppercase; transition: 0.3s; margin-top: 10px;
+        }
+        .btn-login:hover { background: #d4af37; transform: translateY(-2px); }
+
+        /* --- ЕКРАН ЗАВАНТАЖЕННЯ --- */
+        #loading-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--gov-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- ОСНОВНИЙ КАБІНЕТ --- */
+        #main-cabinet { display: none; }
+
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); font-size: 8rem; color: rgba(0, 0, 0, 0.03); pointer-events: none; z-index: -1; white-space: nowrap; font-weight: 900; }
+        
+        .gov-header { 
+            background: linear-gradient(90deg, var(--gov-dark) 0%, var(--gov-blue) 100%); 
+            color: white; 
+            padding: 15px 5%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 4px solid var(--gov-gold);
+        }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .header-left img { height: 60px; }
+        
+        .main-container { display: grid; grid-template-columns: 320px 1fr; max-width: 1440px; margin: 25px auto; background: var(--gov-white); min-height: 850px; border-radius: 4px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); border: 1px solid var(--border-soft); }
+        .sidebar { background: #f1f5f9; border-right: 1px solid var(--border-soft); padding: 30px 20px; }
+        .user-card { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e2e8f0; padding-bottom: 25px; }
+        .user-card img { width: 170px; height: 215px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+        .nav-item { padding: 14px 15px; margin-bottom: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 4px; color: #475569; display: flex; align-items: center; gap: 12px; transition: 0.2s; border: 1px solid transparent; }
+        .nav-item:hover { background: #e2e8f0; border-color: var(--border-soft); }
+        .nav-item.active { background: var(--gov-blue); color: #fff; box-shadow: 0 4px 12px rgba(0,45,86,0.3); }
+
+        .main-content { padding: 40px 50px; position: relative; }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; animation: contentSlide 0.3s ease-out; }
+        @keyframes contentSlide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .page-header { font-size: 24px; font-weight: 800; color: var(--gov-blue); margin-bottom: 25px; border-left: 6px solid var(--gov-gold); padding-left: 15px; text-transform: uppercase; }
+
+        .info-card { background: #ffffff; border: 1px solid var(--border-soft); border-radius: 6px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .data-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .data-label { color: #64748b; font-weight: 600; font-size: 13px; text-transform: uppercase; }
+        .data-value { font-weight: 700; color: var(--gov-dark); }
+
+        /* КРИТИЧНЕ ПОВІДОМЛЕННЯ */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 8, 20, 0.92); z-index: 9999; backdrop-filter: blur(10px); }
+        .modal-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; width: 680px; border-radius: 4px; box-shadow: 0 50px 100px rgba(0,0,0,0.8); border-top: 15px solid var(--status-red); }
+        .modal-top-bar { background: var(--status-red); color: white; padding: 25px 35px; font-weight: 900; font-size: 24px; text-align: center; }
+        .modal-inner { padding: 40px; line-height: 1.7; }
+        .urgent-tag { background: var(--status-red-light); border: 2px dashed var(--status-red); padding: 20px; margin: 25px 0; text-align: center; font-weight: 900; color: var(--status-red); font-size: 19px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
+        .modal-btn { width: 100%; background: var(--gov-blue); color: white; border: none; padding: 20px; font-weight: 800; font-size: 15px; cursor: pointer; text-transform: uppercase; }
+
+        .status-badge { display: inline-block; padding: 6px 12px; border-radius: 4px; font-weight: 800; font-size: 12px; text-transform: uppercase; }
+        .badge-red { background: var(--status-red-light); color: var(--status-red); border: 1px solid var(--status-red); }
+        .badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #0369a1; }
+    </style>
+</head>
+<body>
+
+<div id="auth-screen">
+    <div class="login-card">
+        <img src="https://i.postimg.cc/WpGdz29c/In-Shot-20251222-221305212.png" alt="Герб">
+        <h2>Вхід до кабінету "ОБЕРІГ"</h2>
+        <div class="form-group">
+            <label>Логін (РНОКПП або ID-картки)</label>
+            <input type="text" id="login-input" value="kushch_m_o">
+        </div>
+        <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="pass-input" value="3536009052">
+        </div>
+        <button class="btn-login" onclick="startLogin()">Авторизуватися через КЕП</button>
+    </div>
+</div>
+
+<div id="loading-screen">
+    <div class="loader"></div>
+    <div id="load-text" style="font-weight: bold; color: var(--gov-blue);">Підключення до захищеного каналу зв'язку...</div>
+</div>
+
+<div class="modal-overlay" id="mainModal">
+    <div class="modal-container">
+        <div class="modal-top-bar">🚨 ТЕРМІНОВА ВИМОГА: НЕГАЙНА ЯВКА</div>
+        <div class="modal-inner">
+            <p style="font-size: 18px; color: var(--status-red); font-weight: 900; margin-bottom: 15px;">ГРОМАДЯНИНУ КУЩУ МИКИТІ ОЛЕКСАНДРОВИЧУ</p>
+            <p>Системою моніторингу ЄДР «ОБЕРІГ» зафіксовано ухилення від виконання законних вимог ТЦК та СП. Вашу медичну документацію (висновок ВЛК) направлено на <b>примусову перевірку</b> у зв'язку з виявленими розбіжностями.</p>
+            
+            <p>Поточна заборгованість перед бюджетом: <strong style="color: var(--status-red); font-size: 22px;">8 981,00 ГРН</strong></p>
+            
+            <div class="urgent-tag">ПРИПИНІТЬ ПРАВОПОРУШЕННЯ! <br>ТЕРМІН ОПЛАТИ ТА ЯВКИ: 2 ГОДИНИ.</div>
+
+            <p style="font-size: 14px; background: #fffbeb; border: 1px solid #f59e0b; padding: 15px; border-radius: 4px; color: #92400e;"><b>УВАГА:</b> Після закінчення терміну Ваші дані будуть опубліковані в базі розшуку МВС, а всі рахунки заблоковано в рамках виконавчого провадження.</p>
+            
+            <button class="modal-btn" onclick="closeDocModal()">ПІДТВЕРДИТИ ОТРИМАННЯ ТА ЗОБОВ'ЯЗАННЯ</button>
+        </div>
+    </div>
+</div>
+
+<div id="main-cabinet">
+    <div class="watermark">ЄДР ОБЕРІГ</div>
+
+    <header class="gov-header">
+        <div class="header-left">
+            <img src="https://i.postimg.cc/WpGdz29c/In-Shot-20251222-221305212.png" alt="Герб">
+            <div style="text-transform: uppercase; letter-spacing: 1px; font-size: 13px;">
+                <b>Міністерство оборони України</b><br>
+                <span style="color: var(--gov-gold); font-size: 11px;">Єдиний державний реєстр призовників та резервістів</span>
+            </div>
+        </div>
+        <div style="text-align: right; font-size: 11px;">
+            Статус з'єднання: <span style="color: #4ade80;">● ЗАХИЩЕНО (SSL)</span><br>
+            23.12.2025 | ID: 3536009052
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="user-card">
+                <img src="https://i.postimg.cc/qq8MCRJ3/In-Shot-20251222-213355482.jpg" alt="Фото">
+                <div style="font-weight: 800; color: var(--gov-blue); margin-top: 15px;">КУЩ М. О.</div>
+            </div>
+            <nav>
+                <div class="nav-item active" onclick="navTo(this, 'v-oblik')">🎖️ Військовий облік</div>
+                <div class="nav-item" onclick="navTo(this, 'vlk-med')">⚕️ Медичний огляд (ВЛК)</div>
+                <div class="nav-item" onclick="navTo(this, 'legal-status')">⚖️ Правовий статус</div>
+                <div class="nav-item" onclick="navTo(this, 'dpsu')">🛂 Дозволи на виїзд (ДПСУ)</div>
+                <div class="nav-item" onclick="navTo(this, 'alerts')">🔔 Сповіщення системи</div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            
+            <section id="v-oblik" class="tab-panel active">
+                <div class="page-header">Облікова картка військовозобов'язаного</div>
+                <div class="info-card" style="border-top: 5px solid var(--status-red);">
+                    <div class="data-row"><span class="data-label">Поточний статус</span><span class="status-badge badge-red">ВИКЛЮЧЕНИЙ (ПЕРЕВІРКА)</span></div>
+                    <div class="data-row"><span class="data-label">Військове звання</span><span class="data-value">Солдат</span></div>
+                    <div class="data-row"><span class="data-label">ВОС</span><span class="data-value">999000 (Непридатний)</span></div>
+                    <div class="data-row"><span class="data-label">Приналежність до ТЦК</span><span class="data-value">Дніпропетровський ОТЦК та СП</span></div>
+                    <div class="data-row"><span class="data-label">Дата останнього оновлення</span><span class="data-value">22.12.2025</span></div>
+                </div>
+                <div class="info-card">
+                    <h4 style="margin-top:0">Адреса та контактні дані</h4>
+                    <p>м. Кривий Ріг, вул. Генерала Радієвського, буд. 28, кв. 117</p>
+                    <p>Телефон: +380 ** *** ** **</p>
+                </div>
+            </section>
+
+            <section id="vlk-med" class="tab-panel">
+                <div class="page-header">Результати військово-лікарської експертизи</div>
+                <div class="info-card">
+                    <div class="data-row"><span class="data-label">Дата проходження</span><span class="data-value">10.10.2025</span></div>
+                    <div class="data-row"><span class="data-label">Номер протоколу</span><span class="data-value">№1024/Г</span></div>
+                    <div class="data-row"><span class="data-label">Рішення комісії</span><span class="data-value">Непридатний до в/служби з виключенням</span></div>
+                    <div style="margin-top:20px; padding: 15px; background: #fff1f2; color: var(--status-red); font-weight: bold; border-radius: 4px;">
+                        ⚠️ УВАГА: Статус висновку переведено в режим "ПЕРЕВІРКА ЛЕГІТИМНОСТІ" за запитом слідчих органів.
+                    </div>
+                </div>
+            </section>
+
+            <section id="legal-status" class="tab-panel">
+                <div class="page-header">Юридичні обтяження та санкції</div>
+                <div class="info-card" style="border-left: 10px solid var(--status-red);">
+                    <h4 style="color: var(--status-red)">❌ ПРИМУСОВІ ЗАХОДИ (ВВЕДЕНО В ДІЮ)</h4>
+                    <ul style="line-height: 2;">
+                        <li><b>Арешт банківських рахунків:</b> Готується (очікування оплати 8 981 грн).</li>
+                        <li><b>Обмеження керування ТЗ:</b> Внесено в базу НАІС.</li>
+                        <li><b>Статус у розшуку:</b> В стадії активації (через 2 години).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="dpsu" class="tab-panel">
+                <div class="page-header">Державна прикордонна служба (Перетин)</div>
+                <div class="info-card" style="text-align: center; padding: 50px;">
+                    <div style="font-size: 50px; margin-bottom: 20px;">🛑</div>
+                    <h2 style="color: var(--status-red); margin: 0;">ВИЇЗД ЗАБОРОНЕНО</h2>
+                    <p style="color: #64748b;">Згідно з Постановою КМУ №57 та наявністю адміністративного правопорушення, право на виїзд обмежено до моменту особистої явки в ТЦК.</p>
+                </div>
+            </section>
+
+            <section id="alerts" class="tab-panel">
+                <div class="page-header">Архів офіційних повідомлень</div>
+                <div class="info-card">
+                    <div style="padding-bottom: 10px; border-bottom: 1px solid #eee;">
+                        <span style="font-size: 11px; color: #94a3b8;">22.12.2025 18:22</span><br>
+                        <b>Сформовано запит на розшук</b> - Передано до ГУ НП у Дніпропетровській області.
+                    </div>
+                    <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <span style="font-size: 11px; color: #94a3b8;">11.12.2025 09:00</span><br>
+                        <b>Адміністративний штраф</b> - Нараховано стягнення у розмірі 8 981,00 грн.
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    function startLogin() {
+        const login = document.getElementById('login-input').value;
+        const pass = document.getElementById('pass-input').value;
+
+        if(login === "kushch_m_o" && pass === "3536009052") {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('loading-screen').style.display = 'flex';
+
+            let steps = [
+                "Перевірка електронного підпису...",
+                "Зчитування даних з центрального вузла...",
+                "Синхронізація з реєстрами МВС...",
+                "Отримання статусу обмежень ДПСУ..."
+            ];
+            let i = 0;
+            let interval = setInterval(() => {
+                document.getElementById('load-text').innerText = steps[i];
+                i++;
+                if(i >= steps.length) {
+                    clearInterval(interval);
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.getElementById('main-cabinet').style.display = 'block';
+                    document.getElementById('mainModal').style.display = 'block';
+                }
+            }, 800);
+        } else {
+            alert("Помилка доступу: Дані КЕП не знайдено або термін дії сертифіката вичерпано.");
+        }
+    }
+
+    function closeDocModal() {
+        document.getElementById('mainModal').style.display = 'none';
+    }
+
+    function navTo(element, sectionId) {
+        // Зміна активної кнопки
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        element.classList.add('active');
+
+        // Зміна табів
+        document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+
+        // Обов'язкова поява критичного повідомлення
+        document.getElementById('mainModal').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

